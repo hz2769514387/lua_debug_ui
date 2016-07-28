@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/copy.png</file>
+        <file>images/cut.png</file>
+        <file>images/new.png</file>
+        <file>images/open.png</file>
+        <file>images/paste.png</file>
+        <file>images/save.png</file>
+        <file>images/app.ico</file>
+        <file>images/func.png</file>
+        <file>images/back.ico</file>
+        <file>images/find.ico</file>
+        <file>images/next.ico</file>
+        <file>images/settings.png</file>
+    </qresource>
+</RCC>
