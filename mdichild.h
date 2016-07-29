@@ -71,6 +71,7 @@
 
 #define LUA_MARK_BREAK_POINT    0
 #define LUA_MARK_BREAK_ARROW    1
+#define INDICATOR_SELECTED      9
 
 //函数对象，保存了函数名称和函数位置
 class func

@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
     MainWindow mainWin;
     mainWin.show();
 
+
     foreach (const QString &fileName, parser.positionalArguments())
         mainWin.openFile(fileName);
     return app.exec();

@@ -43,6 +43,11 @@
 #include "mainwindow.h"
 
 
+MainWindow::~MainWindow()
+{
+
+}
+
 MainWindow::MainWindow()
     : mdiArea(new QMdiArea)
 {
@@ -109,8 +114,12 @@ MainWindow::MainWindow()
     icon.addPixmap(QPixmap(QString::fromUtf8(":/images/app.ico")), QIcon::Normal, QIcon::Off);
     setWindowIcon(icon);
 
-
+    //find窗口
+    findDlg = new DialogFind(this);
+    findDlg->InitParentMain(this);
 }
+
+
 
 
 
@@ -306,6 +315,8 @@ void MainWindow::updateMenusAndTitle()
     windowMenuSeparatorAct->setVisible(hasMdiChild);
     showInExplorerAct->setEnabled(hasMdiChild);
     findAct->setEnabled(hasMdiChild);
+    findNextAct->setEnabled(hasMdiChild);
+    targetToLineAct->setEnabled(hasMdiChild);
 #ifndef QT_NO_CLIPBOARD
     bool hasSelection = (activeMdiChild() &&
                          activeMdiChild() ->hasSelectedText());
@@ -484,6 +495,19 @@ void MainWindow::createActions()
     searchMenu->addAction(findAct);
     searchToolBar->addAction(findAct);
 
+    findNextAct = new QAction( tr("&FindNext"), this);
+    findNextAct->setShortcuts(QKeySequence::FindNext);
+    findNextAct->setStatusTip(tr("Find next string."));
+    connect(findNextAct, &QAction::triggered, this, &MainWindow::findNext);
+    searchMenu->addAction(findNextAct);
+    searchMenu->addSeparator();
+
+    targetToLineAct = new QAction( tr("&Locate to line"), this);
+    targetToLineAct->setShortcuts(QKeySequence::WhatsThis);
+    targetToLineAct->setStatusTip(tr("Locate to line."));
+    connect(targetToLineAct, &QAction::triggered, this, &MainWindow::locateToLine);
+    searchMenu->addAction(targetToLineAct);
+
     //窗口菜单
     windowMenu = menuBar()->addMenu(tr("&Window"));
     connect(windowMenu, &QMenu::aboutToShow, this, &MainWindow::updateWindowMenu);
@@ -655,14 +679,103 @@ void MainWindow::funcListCliecked(QListWidgetItem *item)
     currMdiChild->setCursorPosition(nLine,0);
 }
 
-//查找和替换
+//打开查找和替换对话框
 void MainWindow::findAndReplace()
 {
     MdiChild *child = activeMdiChild();
-    if (child) {
-
-        statusBar()->showMessage(tr("findAndReplace"), 2000);
+    if (child)
+    {
+        findDlg->showWithInsertItem( child->selectedText());
+    }
+    else
+    {
+        findDlg->showNormal();
     }
 }
 
+//执行查找
+void MainWindow::exeuteFind(const QString &expr, bool re, bool cs, bool wo,bool wrap, bool insection, bool next)
+{
+    MdiChild *child = activeMdiChild();
+    if (child)
+    {
+        if(next)
+        {
+            if(insection)
+            {
+                child->findFirstInSelection(expr,re,cs,wo,next);
+            }
+            else
+            {
+                child->findFirst(expr,re,cs,wo,wrap,next);
+            }
+        }
+        else
+        {
+            child->findFirst(expr,re,cs,wo,wrap,next);
+            child->findNext();
+        }
+    }
+}
+
+//执行查找下一个
+void MainWindow::findNext()
+{
+    MdiChild *child = activeMdiChild();
+    if (child)
+    {
+        child->findNext();
+    }
+}
+
+//执行替换
+void MainWindow::exeuteReplace(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo,bool wrap, bool insection, bool next)
+{
+    MdiChild *child = activeMdiChild();
+    if (child)
+    {
+        exeuteFind(exprFind,re,cs,wo,wrap,insection,next);
+        child->replace(expr);
+    }
+}
+
+//执行替换所有
+void MainWindow::exeuteReplaceAll(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo,bool wrap, bool insection, bool next)
+{
+    MdiChild *child = activeMdiChild();
+    if (child)
+    {
+        int nCount = 0;
+        while(child->findFirst(exprFind,re,cs,wo,false,true,0,0,false))
+        {
+            child->replace(expr);
+            nCount++;
+        }
+        QString strMsg;
+        strMsg.sprintf("replaced %d items.", nCount);
+        statusBar()->showMessage(strMsg, 2000);
+    }
+}
+
+//转到行
+void MainWindow::locateToLine()
+{
+    MdiChild *child = activeMdiChild();
+    if (child)
+    {
+        char szTips[64];
+        sprintf(szTips,"Line Number(1-%d):",child->lines());
+
+        bool ok = false;
+        QString line = QInputDialog::getText(this,tr("Locate to line"),tr(szTips),QLineEdit::Normal,"",&ok);
+        if(ok&&!line.isEmpty())
+        {
+            int nLine = line.toInt();
+            if(nLine > 0)
+            {
+                child->setSelection(nLine-1, 0, nLine-1,0);
+            }
+        }
+    }
+}
 

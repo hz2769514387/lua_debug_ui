@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogFind</class>
+ <widget class="QDialog" name="DialogFind">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>408</width>
+    <height>268</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Find And Replace</string>
+  </property>
+  <widget class="Line" name="line">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>150</y>
+     <width>391</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>54</width>
+     <height>12</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Find:</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBoxFind">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>281</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="editable">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBoxCS">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>70</y>
+     <width>181</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Case sensitive(&amp;C)</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBoxRE">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>90</y>
+     <width>181</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>As a regular expression(&amp;E)</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBoxWO">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>110</y>
+     <width>181</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Whole word matches only(&amp;M)</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBoxSEL">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>130</y>
+     <width>181</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Find in selection(&amp;S)</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBoxReplace">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>200</y>
+     <width>281</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="editable">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelReplace">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>180</y>
+     <width>54</width>
+     <height>12</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Replace:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonNext">
+   <property name="geometry">
+    <rect>
+     <x>304</x>
+     <y>40</y>
+     <width>91</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Find Next(&amp;N)</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonPrev">
+   <property name="geometry">
+    <rect>
+     <x>304</x>
+     <y>10</y>
+     <width>91</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Find Prev(&amp;P)</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonReplace">
+   <property name="geometry">
+    <rect>
+     <x>304</x>
+     <y>170</y>
+     <width>91</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Replace(&amp;R)</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButtonREall">
+   <property name="geometry">
+    <rect>
+     <x>304</x>
+     <y>230</y>
+     <width>91</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>ReplaceAll(&amp;A)</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

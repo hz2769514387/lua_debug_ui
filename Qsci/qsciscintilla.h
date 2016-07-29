@@ -1580,7 +1580,8 @@ public slots:
     //! \sa isRedoAvailable()
     virtual void redo();
 
-    //! Removes any selected text.
+    //! Removes any
+    //!  text.
     //!
     //! \sa replaceSelectedText()
     virtual void removeSelectedText();

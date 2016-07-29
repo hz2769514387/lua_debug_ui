@@ -44,7 +44,13 @@
 #include <QMainWindow>
 #include <QTextEdit>
 #include <QListWidgetItem>
+#include <QThread>
+#include <QSharedMemory>
+#include <QBuffer>
+#include <QInputDialog>
+
 #include "mdichild.h"
+#include "dialogfind.h"
 
 class MdiChild;
 QT_BEGIN_NAMESPACE
@@ -78,10 +84,13 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow();
-
+    ~MainWindow();
     bool openFile(const QString &fileName);
     void outPutConsole(const char* msg);
     void RefreshFuncList(const QList<func> *functionDetailList, bool bClearOldList);
+    void exeuteFind(const QString &expr, bool re, bool cs, bool wo,bool wrap, bool insection, bool next);
+    void exeuteReplace(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo,bool wrap, bool insection, bool next);
+    void exeuteReplaceAll(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo,bool wrap, bool insection, bool next);
 protected:
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
     void dragEnterEvent(QDragEnterEvent *event) Q_DECL_OVERRIDE;
@@ -106,6 +115,8 @@ private slots:
     void showInExplorer();
     void funcListCliecked(QListWidgetItem *item);
     void findAndReplace();
+    void findNext();
+    void locateToLine();
 private:
     enum { MaxRecentFiles = 5 };
 
@@ -143,9 +154,12 @@ private:
     QAction *windowMenuSeparatorAct;
     QAction *showInExplorerAct;
     QAction *findAct;
+    QAction *findNextAct;
+    QAction *targetToLineAct;
 
     QListWidget  *funcList;
     MyTextWidget *msgList;
+    DialogFind   *findDlg;
 };
 
 

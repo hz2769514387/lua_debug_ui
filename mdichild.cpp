@@ -109,6 +109,7 @@ MdiChild::MdiChild(MainWindow &parent)
 
     //选择文本时自动查找并高亮对应的相同文本
     connect(this,SIGNAL(selectionChanged()),this,SLOT(selectedHighLight()));
+    indicatorDefine(QsciScintilla::BoxIndicator, INDICATOR_SELECTED);
 
     //自动提示
     setAnnotationDisplay(QsciScintilla::AnnotationBoxed);
@@ -118,7 +119,16 @@ MdiChild::MdiChild(MainWindow &parent)
 //选择文本时自动查找并高亮对应的相同文本
 void MdiChild::selectedHighLight()
 {
+    QString &strSel = selectedText();
+    if(strSel.isEmpty())
+    {
+       clearIndicatorRange(0,0,lines(),4096,INDICATOR_SELECTED);
+       return;
+    }
 
+    fillIndicatorRange(1, 2, 4,5, INDICATOR_SELECTED);
+
+    mainFrame.outPutConsole(strSel.toStdString().c_str());
 }
 
 //只处理自动完成.charAdd如果<0，则代表没有文本追加
@@ -231,7 +241,7 @@ void MdiChild::keyPressEvent(QKeyEvent *event)
 //            int ff = SendScintilla(SCI_POSITIONFROMPOINTCLOSE,winPos.x(),winPos.y());
 //            sprintf(szerr,"%d",ff);
 //            mainFrame.outPutConsole(szerr);
-            findFirst(selectedText(),false,true,false,true);
+
 
 
             return;
@@ -256,13 +266,13 @@ void MdiChild::keyPressEvent(QKeyEvent *event)
 
 void MdiChild::mouseMoveEvent(QMouseEvent *e)
 {
-    char szerr[10000];
-    sprintf(szerr,"g:%d-%d",e->globalX(),e->globalY());
-    mainFrame.outPutConsole(szerr);
+//    char szerr[10000];
+//    sprintf(szerr,"g:%d-%d",e->globalX(),e->globalY());
+//    mainFrame.outPutConsole(szerr);
 
-    QPoint winPos = QWidget::mapFromGlobal(e->globalPos()) ;
-    sprintf(szerr,"w:%d-%d",winPos.x(),winPos.y());
-    mainFrame.outPutConsole(szerr);
+//    QPoint winPos = QWidget::mapFromGlobal(e->globalPos()) ;
+//    sprintf(szerr,"w:%d-%d",winPos.x(),winPos.y());
+//    mainFrame.outPutConsole(szerr);
 
     QsciScintilla::mouseMoveEvent(e);
 }
