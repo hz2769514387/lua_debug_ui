@@ -109,7 +109,7 @@ MdiChild::MdiChild(MainWindow &parent)
 
     //选择文本时自动查找并高亮对应的相同文本
     connect(this,SIGNAL(selectionChanged()),this,SLOT(selectedHighLight()));
-    indicatorDefine(QsciScintilla::BoxIndicator, INDICATOR_SELECTED);
+    indicatorDefine(QsciScintilla::RoundBoxIndicator, INDICATOR_SELECTED);
 
     //自动提示
     setAnnotationDisplay(QsciScintilla::AnnotationBoxed);
@@ -122,13 +122,37 @@ void MdiChild::selectedHighLight()
     QString &strSel = selectedText();
     if(strSel.isEmpty())
     {
-       clearIndicatorRange(0,0,lines(),4096,INDICATOR_SELECTED);
+       int endline,endindex;
+       lineIndexFromPosition(SendScintilla(SCI_GETLENGTH), &endline, &endindex);
+       clearIndicatorRange(0,0,endline,endindex,INDICATOR_SELECTED);
        return;
     }
 
-    fillIndicatorRange(1, 2, 4,5, INDICATOR_SELECTED);
+    //寻找所有跟选择文本相同的位置并标记为indicator INDICATOR_SELECTED
+    int startPos = 0;
+    while(true)
+    {
+        int endPos = SendScintilla(SCI_GETLENGTH);
+        SendScintilla(SCI_SETSEARCHFLAGS, SCFIND_MATCHCASE|SCFIND_WHOLEWORD);
+        SendScintilla(SCI_SETTARGETSTART, startPos);
+        SendScintilla(SCI_SETTARGETEND, endPos);
 
-    mainFrame.outPutConsole(strSel.toStdString().c_str());
+        ScintillaBytes s = textAsBytes(strSel);
+        int pos = SendScintilla(SCI_SEARCHINTARGET, s.length(),ScintillaBytesConstData(s));
+        if(-1 == pos)
+        {
+            //没找到
+            return;
+        }
+        long targstart = SendScintilla(SCI_GETTARGETSTART);
+        long targend = SendScintilla(SCI_GETTARGETEND);
+        int startline,startindex,endline,endindex;
+        lineIndexFromPosition(targstart, &startline, &startindex);
+        lineIndexFromPosition(targend, &endline, &endindex);
+        fillIndicatorRange(startline, startindex, endline,endindex, INDICATOR_SELECTED);
+
+        startPos = targend;
+    }
 }
 
 //只处理自动完成.charAdd如果<0，则代表没有文本追加
@@ -235,14 +259,12 @@ void MdiChild::keyPressEvent(QKeyEvent *event)
         case Qt::Key_F12:
         {
             //跳转到定义
-//            char szerr[10000];
 //            QPoint curPos = cursor().pos();
-//            QPoint winPos = QWidget::mapFromGlobal(curPos) ;
-//            int ff = SendScintilla(SCI_POSITIONFROMPOINTCLOSE,winPos.x(),winPos.y());
-//            sprintf(szerr,"%d",ff);
-//            mainFrame.outPutConsole(szerr);
-
-
+//            QPoint currTabPos = QWidget::mapFromGlobal(curPos) ;
+//            QString &strWordsAtPoint = wordAtPoint(currTabPos);
+            getCursorPosition(&line, &index);
+            QString & strWordsAtPoint = wordAtLineIndex( line,  index);
+            mainFrame.outPutConsole(strWordsAtPoint.toStdString().c_str());
 
             return;
         }
@@ -266,14 +288,9 @@ void MdiChild::keyPressEvent(QKeyEvent *event)
 
 void MdiChild::mouseMoveEvent(QMouseEvent *e)
 {
-//    char szerr[10000];
-//    sprintf(szerr,"g:%d-%d",e->globalX(),e->globalY());
-//    mainFrame.outPutConsole(szerr);
-
-//    QPoint winPos = QWidget::mapFromGlobal(e->globalPos()) ;
-//    sprintf(szerr,"w:%d-%d",winPos.x(),winPos.y());
-//    mainFrame.outPutConsole(szerr);
-
+//    QPoint currTabPos = QWidget::mapFromGlobal(e->globalPos()) ;
+//    QString &strWordsAtPoint = wordAtPoint(currTabPos);
+//    mainFrame.outPutConsole(strWordsAtPoint.toStdString().c_str());
     QsciScintilla::mouseMoveEvent(e);
 }
 
