@@ -147,8 +147,6 @@ private:
 #endif
     QAction *closeAct;
     QAction *closeAllAct;
-    QAction *tileAct;
-    QAction *cascadeAct;
     QAction *nextAct;
     QAction *previousAct;
     QAction *windowMenuSeparatorAct;

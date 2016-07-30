@@ -56,8 +56,8 @@ MdiChild::MdiChild(MainWindow &parent)
     Lexer = NULL;
     lastInputChar = 0;
     bFunc1IsCache = false;
-    regexFunc.setPattern("function\\s+(.+)?\\(");
-    regexFunc.optimize();
+    //sRegexFunc = textAsBytes("function\\s+(.+)?\\(");
+    sRegexFunc = textAsBytes("function\\s+.+?\(");
 
     //不允许拖曳文件到编辑框，只允许拖曳到主窗口
     setAcceptDrops(false);
@@ -110,6 +110,9 @@ MdiChild::MdiChild(MainWindow &parent)
     //选择文本时自动查找并高亮对应的相同文本
     connect(this,SIGNAL(selectionChanged()),this,SLOT(selectedHighLight()));
     indicatorDefine(QsciScintilla::RoundBoxIndicator, INDICATOR_SELECTED);
+
+    //按下control+鼠标点击时标记当前选择单词
+    indicatorDefine(QsciScintilla::PlainIndicator, INDICATOR_CONTROL);
 
     //自动提示
     setAnnotationDisplay(QsciScintilla::AnnotationBoxed);
@@ -167,21 +170,37 @@ void MdiChild::charAddedAndAutoComplete(int charAdd)
 //更新内部保存的函数列表，判断是不是需要刷新界面的函数列表
 void MdiChild::RefreshFuncList(bool bForceRefreshFuncList)
 {
-    //更新函数列表
+    //初始化当前函数列表
     QList<func> * currFuncList = getCurrentFuncList();
     QList<func> * cacheFuncList = getCacheFuncList();
     currFuncList->clear();
     func tmpFunc;
 
-    QRegularExpressionMatchIterator iterator = regexFunc.globalMatch(text());
-    while (iterator.hasNext())
+    //根据正则表达式查找函数列表
+    int startPos = 0;
+    while(true)
     {
-        QRegularExpressionMatch match = iterator.next();
+        int endPos = SendScintilla(SCI_GETLENGTH);
+        SendScintilla(SCI_SETSEARCHFLAGS, SCFIND_MATCHCASE|SCFIND_REGEXP|SCFIND_CXX11REGEX);
+        SendScintilla(SCI_SETTARGETSTART, startPos);
+        SendScintilla(SCI_SETTARGETEND, endPos);
 
-        //当前光标在本BLOCK内的相对位置
-        tmpFunc.strFunction = match.captured(1);
-        tmpFunc.position =  ConvertPosToLine(match.capturedStart(1));
+        int pos = SendScintilla(SCI_SEARCHINTARGET, sRegexFunc.length(),ScintillaBytesConstData(sRegexFunc));
+        if(-1 == pos)
+        {
+            //没找到
+            break;
+        }
+        long targstart = SendScintilla(SCI_GETTARGETSTART);
+        long targend = SendScintilla(SCI_GETTARGETEND);
+        QString strFunction = getTextRange(targstart,targend);
+        int startline,startindex;
+        lineIndexFromPosition(targstart, &startline, &startindex);
+        tmpFunc.strFunction = strFunction;
+        tmpFunc.position =  startline;
         currFuncList->append(tmpFunc);
+
+        startPos = targend;
     }
 
     //如果需要强制刷新，则强制刷新
@@ -259,13 +278,11 @@ void MdiChild::keyPressEvent(QKeyEvent *event)
         case Qt::Key_F12:
         {
             //跳转到定义
-//            QPoint curPos = cursor().pos();
-//            QPoint currTabPos = QWidget::mapFromGlobal(curPos) ;
-//            QString &strWordsAtPoint = wordAtPoint(currTabPos);
             getCursorPosition(&line, &index);
             QString & strWordsAtPoint = wordAtLineIndex( line,  index);
             mainFrame.outPutConsole(strWordsAtPoint.toStdString().c_str());
 
+            QToolTip::showText( cursor(). pos(),strWordsAtPoint);
             return;
         }
         case Qt::Key_Slash:
@@ -276,7 +293,7 @@ void MdiChild::keyPressEvent(QKeyEvent *event)
                 charAddedAndAutoComplete(-1);
                 return;
             }
-            break;
+            return;
         }
     default:
         break;
@@ -286,18 +303,19 @@ void MdiChild::keyPressEvent(QKeyEvent *event)
     QsciScintilla::keyPressEvent(event);
 }
 
-void MdiChild::mouseMoveEvent(QMouseEvent *e)
+//点击鼠标事件，如果点击时按下了control则跳转到定义
+void MdiChild::mousePressEvent(QMouseEvent *event)
 {
-//    QPoint currTabPos = QWidget::mapFromGlobal(e->globalPos()) ;
-//    QString &strWordsAtPoint = wordAtPoint(currTabPos);
-//    mainFrame.outPutConsole(strWordsAtPoint.toStdString().c_str());
-    QsciScintilla::mouseMoveEvent(e);
-}
+    if ( Qt::ControlModifier == event->modifiers())
+    {
+        QPoint currTabPos = QWidget::mapFromGlobal(event->globalPos()) ;
+        QString &strWordsAtPoint = wordAtPoint(currTabPos);
+        mainFrame.outPutConsole(strWordsAtPoint.toStdString().c_str());
 
-bool MdiChild::event(QEvent *e)
-{
+        return;
+    }
 
-   return QsciScintilla::event(e);
+    QsciScintilla::mousePressEvent(event);
 }
 
 //点击页面添加或删除断点
@@ -532,20 +550,35 @@ void MdiChild::ChangeLexer(const QString &fileName)
     setLexer(Lexer);
     Lexer->setFont(QFont("Consolas"));
     Lexer->setAutoIndentStyle(QsciScintilla::AiMaintain | QsciScintilla::AiOpening | QsciScintilla::AiClosing);
-    setAutoCompletionCaseSensitivity(false);
+    //setAutoCompletionCaseSensitivity(false);
+
+
 }
 
-//将文字位置转换成行号
-int MdiChild::ConvertPosToLine(int nPos)
+//获取对应位置的文本
+QString MdiChild::getTextRange(int start_pos,int end_pos) const
 {
-    const QString& strText = text();
-    int nLineAtPos = 0;
-    for(int i = 0 ; i < nPos; i++)
-    {
-        if(strText[i] == '\n')
-        {
-            nLineAtPos++;
-        }
-    }
-    return nLineAtPos;
+    if (start_pos < 0 || start_pos <0 )
+        return QString();
+
+    int word_len = end_pos - start_pos;
+    if (word_len <= 0)
+        return QString();
+
+    char *buf = new char[word_len + 1];
+    SendScintilla(SCI_GETTEXTRANGE, start_pos, end_pos, buf);
+    QString word = bytesAsText(buf);
+    delete[] buf;
+    return word;
+}
+
+//跳转到指定行
+void MdiChild::jumpToLine(int line)
+{
+    int pos = positionFromLineIndex(line,0);
+
+    SendScintilla(SCI_ENSUREVISIBLEENFORCEPOLICY, line);
+
+    // Now set the selection.
+    SendScintilla(SCI_SETSEL, pos, pos);
 }

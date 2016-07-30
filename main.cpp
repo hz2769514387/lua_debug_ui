@@ -53,11 +53,11 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
-    QCoreApplication::setApplicationName("LuaStudio");
-    QCoreApplication::setOrganizationName("HaiMi");
+    QCoreApplication::setApplicationName("lua_debug_ui");
+    QCoreApplication::setOrganizationName("huangzhe");
     QCoreApplication::setApplicationVersion(QT_VERSION_STR);
     QCommandLineParser parser;
-    parser.setApplicationDescription("LuaStudio");
+    parser.setApplicationDescription("lua_debug_ui");
     parser.addHelpOption();
     parser.addVersionOption();
     parser.addPositionalArgument("file", "The file to open.");

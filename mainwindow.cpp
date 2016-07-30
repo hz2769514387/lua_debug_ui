@@ -68,7 +68,7 @@ MainWindow::MainWindow()
 
     readSettings();
 
-    setWindowTitle(tr("LuaStudio"));
+    setWindowTitle(tr("lua_debug_ui"));
     setUnifiedTitleAndToolBarOnMac(true);
 
     //设定tab的右键菜单
@@ -84,6 +84,8 @@ MainWindow::MainWindow()
         tab->addAction(sepAction);
         tab->addAction(showInExplorerAct);
         tab->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+        tab->setExpanding(false);
     }
 
     //函数列表
@@ -91,7 +93,7 @@ MainWindow::MainWindow()
     funcList = new QListWidget(dock);
     funcList->setAcceptDrops(false);
     dock->setWidget(funcList);
-    dock->setFeatures(QDockWidget::DockWidgetMovable );
+    //dock->setFeatures(QDockWidget::DockWidgetMovable );
     addDockWidget(Qt::RightDockWidgetArea, dock);
     connect(funcList, &QListWidget::itemDoubleClicked,this, &MainWindow::funcListCliecked);
 
@@ -100,7 +102,7 @@ MainWindow::MainWindow()
     msgList = new MyTextWidget(dock);
     msgList->setAcceptDrops(false);
     dock->setWidget(msgList);
-    dock->setFeatures(QDockWidget::DockWidgetMovable);
+    //dock->setFeatures(QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, dock);
 
     //只有主窗口允许拖曳
@@ -293,8 +295,8 @@ void MainWindow::paste()
 
 void MainWindow::about()
 {
-   QMessageBox::about(this, tr("About LuaStudio"),
-            tr("The <b>LuaStudio</b> example demonstrates how to write multiple "
+   QMessageBox::about(this, tr("About lua_debug_ui"),
+            tr("The <b>lua_debug_ui</b> example demonstrates how to write multiple "
                "document interface applications using Qt."));
 }
 
@@ -308,8 +310,6 @@ void MainWindow::updateMenusAndTitle()
 #endif
     closeAct->setEnabled(hasMdiChild);
     closeAllAct->setEnabled(hasMdiChild);
-    tileAct->setEnabled(hasMdiChild);
-    cascadeAct->setEnabled(hasMdiChild);
     nextAct->setEnabled(hasMdiChild);
     previousAct->setEnabled(hasMdiChild);
     windowMenuSeparatorAct->setVisible(hasMdiChild);
@@ -346,9 +346,6 @@ void MainWindow::updateWindowMenu()
     windowMenu->clear();
     windowMenu->addAction(closeAct);
     windowMenu->addAction(closeAllAct);
-    windowMenu->addSeparator();
-    windowMenu->addAction(tileAct);
-    windowMenu->addAction(cascadeAct);
     windowMenu->addSeparator();
     windowMenu->addAction(nextAct);
     windowMenu->addAction(previousAct);
@@ -525,14 +522,6 @@ void MainWindow::createActions()
     showInExplorerAct->setStatusTip(tr("Show file in Explorer"));
     connect(showInExplorerAct, &QAction::triggered, this, &MainWindow::showInExplorer);
 
-    tileAct = new QAction(tr("&Tile"), this);
-    tileAct->setStatusTip(tr("Tile the windows"));
-    connect(tileAct, &QAction::triggered, mdiArea, &QMdiArea::tileSubWindows);
-
-    cascadeAct = new QAction(tr("&Cascade"), this);
-    cascadeAct->setStatusTip(tr("Cascade the windows"));
-    connect(cascadeAct, &QAction::triggered, mdiArea, &QMdiArea::cascadeSubWindows);
-
     nextAct = new QAction(tr("Ne&xt"), this);
     nextAct->setShortcuts(QKeySequence::NextChild);
     nextAct->setStatusTip(tr("Move the focus to the next window"));
@@ -676,7 +665,7 @@ void MainWindow::funcListCliecked(QListWidgetItem *item)
         outPutConsole("【错误】没有找到activeMdiChild。");
         return;
     }
-    currMdiChild->setCursorPosition(nLine,0);
+    currMdiChild->jumpToLine(nLine);
 }
 
 //打开查找和替换对话框
@@ -773,7 +762,11 @@ void MainWindow::locateToLine()
             int nLine = line.toInt();
             if(nLine > 0)
             {
-                child->setSelection(nLine-1, 0, nLine-1,0);
+                child->jumpToLine( nLine-1);
+            }
+            else
+            {
+                child->jumpToLine(0);
             }
         }
     }

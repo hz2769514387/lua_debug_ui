@@ -48,6 +48,7 @@
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 #include <QRegularExpressionMatchIterator>
+#include <QToolTip>
 #include <Qsci/qsciscintilla.h>
 #include <Qsci/qscistyle.h>
 #include <Qsci/qscilexer.h>
@@ -72,6 +73,7 @@
 #define LUA_MARK_BREAK_POINT    0
 #define LUA_MARK_BREAK_ARROW    1
 #define INDICATOR_SELECTED      9
+#define INDICATOR_CONTROL       10
 
 //函数对象，保存了函数名称和函数位置
 class func
@@ -98,12 +100,13 @@ public:
     QString userFriendlyCurrentFile();
     QString currentFile() { return curFileName; }
     bool    isUntitledFile(){return isUntitled;}
+    void jumpToLine(int line);
 protected:
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
     void focusInEvent(QFocusEvent *event) Q_DECL_OVERRIDE;
-    bool event(QEvent *e) Q_DECL_OVERRIDE;
-    void mouseMoveEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+
 private slots:
     void documentWasModified();
     void marginClicked(int margin, int line, Qt::KeyboardModifiers state);
@@ -115,13 +118,14 @@ private:
     QString strippedName(const QString &fullFileName);
     void RefreshFuncList(bool bForceRefreshFuncList);
     int  ConvertPosToLine(int nPos);
+    QString getTextRange(int start_pos,int end_pos) const;
     void ChangeLexer(const QString &fileName);
 
     QString curFileName;            //当前文件全路径
     bool    isUntitled;             //是否为无标题文本
     MainWindow  &mainFrame;         //保存的主界面指针
     QsciLexer   *Lexer;             //当前文档的语法解析器
-    QRegularExpression regexFunc;   //提取函数列表的正则表达式
+    ScintillaBytes sRegexFunc;      //提取函数列表的正则表达式
     int lastInputChar;              //记录最后一个输入的字符
 
     //两份函数列表，相互轮转作为缓存
