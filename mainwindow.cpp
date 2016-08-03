@@ -860,7 +860,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     return false ;
 }
 
-//启动时判断是否需要显示界面还是激活另外的进程
+//启动时判断是否需要显示界面还是激活另外的进程(返回true，第一次启动，显示界面； false 后续的启动，直接退出)
 bool MainWindow::checkAndOpenFile( const QString &openFileName )
 {
     //多个lua_debug_ui进程通信手段

@@ -645,7 +645,7 @@ void  MdiChild::checkReloadFile()
     QFile file(curFileName);
     if (!file.open(QFile::ReadOnly | QFile::Text))
     {
-        QMessageBox::warning(this, tr("lua_debug_ui"),tr("Cannot read file %1:\n%2.").arg(curFileName).arg(file.errorString()));
+        mainFrame.outPutConsole("file maybe deleted by others");
         return;
     }
     QTextStream in(&file);
