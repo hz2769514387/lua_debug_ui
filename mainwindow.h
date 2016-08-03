@@ -48,6 +48,8 @@
 #include <QSharedMemory>
 #include <QBuffer>
 #include <QInputDialog>
+#include <QComboBox>
+#include <windows.h>
 
 #include "mdichild.h"
 #include "dialogfind.h"
@@ -86,16 +88,20 @@ public:
     MainWindow();
     ~MainWindow();
     bool openFile(const QString &fileName);
+    bool checkAndOpenFile( const QString &openFileName );
     void outPutConsole(const char* msg);
+
     void RefreshFuncList(const QList<func> *functionDetailList, bool bClearOldList);
+    void refreshEncodingDisplay(int nEncoding);
     void exeuteFind(const QString &expr, bool re, bool cs, bool wo,bool wrap, bool insection, bool next);
     void exeuteReplace(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo,bool wrap, bool insection, bool next);
-    void exeuteReplaceAll(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo,bool wrap, bool insection, bool next);
+    void exeuteReplaceAll(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo);
 protected:
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
     void dragEnterEvent(QDragEnterEvent *event) Q_DECL_OVERRIDE;
     void dropEvent(QDropEvent *event) Q_DECL_OVERRIDE;
-
+    bool eventFilter(QObject *o, QEvent *e) Q_DECL_OVERRIDE;
+    void timerEvent( QTimerEvent *event ) Q_DECL_OVERRIDE;
 private slots:
     void newFile();
     void open();
@@ -158,6 +164,12 @@ private:
     QListWidget  *funcList;
     MyTextWidget *msgList;
     DialogFind   *findDlg;
+    QComboBox    *cbEncoding;
+    QComboBox    *cbEolMode;
+    bool          bActiveWindow;
+    int           timerShardMId;
+    HANDLE        hSharedMMap;
+    char*         pSharedMBuffer;
 };
 
 

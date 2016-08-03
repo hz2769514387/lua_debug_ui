@@ -100,7 +100,9 @@ public:
     QString userFriendlyCurrentFile();
     QString currentFile() { return curFileName; }
     bool    isUntitledFile(){return isUntitled;}
-    void jumpToLine(int line);
+    void    jumpToLine(int line);
+    void    checkReloadFile();
+    void    guessFileEncoding(const QString &fileName);
 protected:
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
@@ -112,6 +114,7 @@ private slots:
     void marginClicked(int margin, int line, Qt::KeyboardModifiers state);
     void charAddedAndAutoComplete(int charAdd);
     void selectedHighLight();
+
 private:
     bool maybeSave();
     void setCurrentFile(const QString &fileName);
@@ -121,7 +124,9 @@ private:
     QString getTextRange(int start_pos,int end_pos) const;
     void ChangeLexer(const QString &fileName);
 
+    QString curFileCache;           //文档缓存
     QString curFileName;            //当前文件全路径
+    int     curFileEncode;          //当前文件编码 0 ANSI 1 unicode 2 unicode big endian 3 utf8
     bool    isUntitled;             //是否为无标题文本
     MainWindow  &mainFrame;         //保存的主界面指针
     QsciLexer   *Lexer;             //当前文档的语法解析器

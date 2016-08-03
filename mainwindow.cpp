@@ -39,13 +39,25 @@
 ****************************************************************************/
 
 #include <QtWidgets>
-
 #include "mainwindow.h"
-
+#define SHARED_MEM_NAME  L"LUA_DEBUG_UI_SHARED_OPENFILE"
 
 MainWindow::~MainWindow()
 {
-
+    if ( timerShardMId != 0 )
+    {
+        killTimer(timerShardMId);
+    }
+    if(pSharedMBuffer)
+    {
+         ::UnmapViewOfFile(pSharedMBuffer);
+        pSharedMBuffer = NULL;
+    }
+    if(hSharedMMap)
+    {
+        ::CloseHandle(hSharedMMap);
+        hSharedMMap = NULL;
+    }
 }
 
 MainWindow::MainWindow()
@@ -119,10 +131,43 @@ MainWindow::MainWindow()
     //find窗口
     findDlg = new DialogFind(this);
     findDlg->InitParentMain(this);
+
+    //label调色板定义
+    QPalette pe;
+    pe.setColor(QPalette::WindowText,Qt::blue);
+
+    //文件编码显示
+    QLabel *textEncoding = new QLabel(this);
+    textEncoding->setText("Encoding:");
+    textEncoding->setPalette(pe);
+    statusBar()->addPermanentWidget(textEncoding);
+    cbEncoding = new QComboBox(this);
+    cbEncoding->insertItem(0,"ANSI");
+    cbEncoding->insertItem(1,"Unicode");
+    cbEncoding->insertItem(2,"Unicode big endian");
+    cbEncoding->insertItem(3,"UTF-8");
+    statusBar()->addPermanentWidget(cbEncoding);
+
+    //EOL 模式
+    QLabel *textEolMode = new QLabel(this);
+    textEolMode->setText("    EOL Mode:");
+    textEolMode->setPalette(pe);
+    statusBar()->addPermanentWidget(textEolMode);
+    cbEolMode = new QComboBox(this);
+    cbEolMode->insertItem(0,"Windows Mode (CRLF)");
+    cbEolMode->insertItem(1,"Linux Mode (CR)");
+    cbEolMode->insertItem(2,"Mac Mode(LF)");
+    statusBar()->addPermanentWidget(cbEolMode);
+
+    //安装事件过滤器
+    QWidget::installEventFilter(this);
+
+    //启动定时器
+    bActiveWindow = true;
+    hSharedMMap = NULL;
+    pSharedMBuffer = NULL;
+    timerShardMId = startTimer(100);
 }
-
-
-
 
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -729,7 +774,7 @@ void MainWindow::exeuteReplace(const QString &exprFind,const QString &expr, bool
 }
 
 //执行替换所有
-void MainWindow::exeuteReplaceAll(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo,bool wrap, bool insection, bool next)
+void MainWindow::exeuteReplaceAll(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo)
 {
     MdiChild *child = activeMdiChild();
     if (child)
@@ -772,3 +817,114 @@ void MainWindow::locateToLine()
     }
 }
 
+//刷新编码显示
+void MainWindow::refreshEncodingDisplay(int nEncoding)
+{
+    int nDisplayIndex = 0;
+    if(nEncoding >= 0 && nEncoding <= 3)
+    {
+        nDisplayIndex = nEncoding;
+    }
+    cbEncoding->setCurrentIndex(nDisplayIndex);
+}
+
+//检测窗口激活事件
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if( watched == this )
+    {
+        //窗口激活
+        if(QEvent::WindowActivate == event->type())
+        {
+            foreach (QMdiSubWindow *window, mdiArea->subWindowList())
+            {
+                MdiChild *mdiChild = qobject_cast<MdiChild *>(window->widget());
+                if (mdiChild)
+                {
+                    mdiChild->checkReloadFile();
+                }
+            }
+            bActiveWindow = true;
+            return true ;
+        }
+        else if(QEvent::WindowDeactivate == event->type())
+        {
+            bActiveWindow = false;
+            return true;
+        }
+        else
+        {
+            return false ;
+        }
+    }
+    return false ;
+}
+
+//启动时判断是否需要显示界面还是激活另外的进程
+bool MainWindow::checkAndOpenFile( const QString &openFileName )
+{
+    //多个lua_debug_ui进程通信手段
+    hSharedMMap = NULL;
+    hSharedMMap = ::OpenFileMapping(FILE_MAP_ALL_ACCESS, 0, SHARED_MEM_NAME);
+    if (NULL == hSharedMMap)
+    {
+        //打开失败，创建
+        hSharedMMap = ::CreateFileMapping(INVALID_HANDLE_VALUE,
+                                    NULL,
+                                    PAGE_READWRITE,
+                                    0,
+                                    MAX_PATH*2,
+                                    SHARED_MEM_NAME);
+        if(NULL == hSharedMMap)
+        {
+            QMessageBox::information(NULL, "lua_debug_ui", "CreateFileMapping fail!",  QMessageBox::Ok , QMessageBox::Ok);
+            return false;
+        }
+        pSharedMBuffer = (char*)::MapViewOfFile(hSharedMMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+        return true;
+    }
+    else
+    {
+        //打开成功，说明不是第一次了
+        LPVOID pBuffer = ::MapViewOfFile(hSharedMMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+        QByteArray byteBuf = openFileName.toUtf8();
+        strcpy((char*)pBuffer, byteBuf.constData());
+        ::UnmapViewOfFile(pBuffer);
+        ::CloseHandle(hSharedMMap);
+        return false;
+    }
+}
+
+//定时读取共享内存
+void MainWindow::timerEvent( QTimerEvent *event )
+{
+    if(event->timerId() == timerShardMId)
+    {
+        if(NULL == hSharedMMap)
+        {
+            return;
+        }
+        if(bActiveWindow)
+        {
+            return;
+        }
+
+        if(pSharedMBuffer[0] != 0)
+        {
+            openFile(pSharedMBuffer);
+            pSharedMBuffer[0] = 0;
+
+            //激活到前台
+            Qt::WindowStates winStatus = Qt::WindowNoState;
+            if (windowState() & Qt::WindowMaximized)
+            {
+                winStatus = Qt::WindowMaximized;
+            }
+            setWindowState(Qt::WindowMinimized);
+            setWindowState(Qt::WindowActive | winStatus);
+            activateWindow();
+            raise();
+            bActiveWindow = true;
+        }
+    }
+}

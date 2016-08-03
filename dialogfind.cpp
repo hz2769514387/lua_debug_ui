@@ -117,9 +117,6 @@ void DialogFind::on_pushButtonREall_clicked()
                                   this->ui->comboBoxReplace->currentText(),
                                   ui->checkBoxRE->isChecked(),
                                   ui->checkBoxCS->isChecked(),
-                                  ui->checkBoxWO->isChecked(),
-                                  true,
-                                  ui->checkBoxSEL->isChecked(),
-                                  true);
+                                  ui->checkBoxWO->isChecked());
     }
 }

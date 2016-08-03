@@ -64,9 +64,12 @@ int main(int argc, char *argv[])
     parser.process(app);
 
     MainWindow mainWin;
+    if(false == mainWin.checkAndOpenFile( parser.positionalArguments().at(0)))
+    {
+        return 0;
+    }
+
     mainWin.show();
-
-
     foreach (const QString &fileName, parser.positionalArguments())
         mainWin.openFile(fileName);
     return app.exec();

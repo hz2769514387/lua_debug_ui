@@ -1,16 +1,9 @@
---[[
-	创建：
-		功能：JSON解析模块
-		日期：2016-04-13
-		作者：黄哲
---]]
-
---[[
+ 
 	测试案例：
 	local _tb1,_Json
 	
 	_tb1 = CF_JsonStr2Table(' ' )
-	_Json = CF_JsonTable2Str(_tb1)
+	_Json = CF_JsonTable2Str(_tb1) 
 	
 	_tb1 =CF_JsonStr2Table('{"data" : "" }')
 	_Json = CF_JsonTable2Str(_tb1)
@@ -429,7 +422,7 @@ function JSON_GetFirstValue(_Str)
 		if nil == _value then
 			return nil
 		end
-	else
+	else 
 		--Value值为普通值
 		_ret = 2	
 		if "\"" == _FirstChar then

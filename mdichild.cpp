@@ -52,6 +52,8 @@ MdiChild::MdiChild(MainWindow &parent)
     :mainFrame(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
+    curFileCache = "";
+    curFileEncode = 0;
     isUntitled = true;
     Lexer = NULL;
     lastInputChar = 0;
@@ -283,6 +285,8 @@ void MdiChild::keyPressEvent(QKeyEvent *event)
             mainFrame.outPutConsole(strWordsAtPoint.toStdString().c_str());
 
             QToolTip::showText( cursor(). pos(),strWordsAtPoint);
+
+
             return;
         }
         case Qt::Key_Slash:
@@ -336,6 +340,9 @@ void MdiChild::newFile()
     static int sequenceNumber = 1;
 
     isUntitled = true;
+    curFileEncode = 0;
+    mainFrame.refreshEncodingDisplay(curFileEncode);
+
     curFileName = tr("NewFile%1.lua").arg(sequenceNumber++);
     setWindowTitle(curFileName + "[*]");
     connect(this, SIGNAL(textChanged()),this, SLOT(documentWasModified()));
@@ -345,27 +352,38 @@ void MdiChild::newFile()
 
 bool MdiChild::loadFile(const QString &fileName)
 {
+    //文件编码识别
+    guessFileEncoding(fileName);
+
+    //真正打开文件
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly | QFile::Text))
     {
-        QMessageBox::warning(this, tr("LuaStudio"),tr("Cannot read file %1:\n%2.").arg(fileName).arg(file.errorString()));
+        QMessageBox::warning(this, tr("lua_debug_ui"),tr("Cannot read file %1:\n%2.").arg(fileName).arg(file.errorString()));
         return false;
     }
-
     QTextStream in(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    setText(in.readAll());
+    curFileCache = in.readAll();
+    setText(curFileCache);
     QApplication::restoreOverrideCursor();
+    file.close();
 
     setCurrentFile(fileName);
     connect(this, SIGNAL(textChanged()),this, SLOT(documentWasModified()));
 
     ChangeLexer(fileName);
+
+    //保存点
+    SendScintilla(SCI_SETSAVEPOINT);
     return true;
 }
 
 bool MdiChild::save()
 {
+    //保存点
+    SendScintilla(SCI_SETSAVEPOINT);
+
     if (isUntitled)
     {
         return saveAs();
@@ -391,13 +409,14 @@ bool MdiChild::saveFile(const QString &fileName)
     QFile file(fileName);
     if (!file.open(QFile::WriteOnly | QFile::Text))
     {
-        QMessageBox::warning(this, tr("LuaStudio"), tr("Cannot write file %1:\n%2.") .arg(QDir::toNativeSeparators(fileName), file.errorString()));
+        QMessageBox::warning(this, tr("lua_debug_ui"), tr("Cannot write file %1:\n%2.") .arg(QDir::toNativeSeparators(fileName), file.errorString()));
         return false;
     }
 
     QTextStream out(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    out << this->text() ;
+    curFileCache = this->text() ;
+    out << curFileCache;
     QApplication::restoreOverrideCursor();
 
     setCurrentFile(fileName);
@@ -421,6 +440,8 @@ void MdiChild::closeEvent(QCloseEvent *event)
 void MdiChild::focusInEvent(QFocusEvent *event)
 {
     RefreshFuncList(true);
+    mainFrame.refreshEncodingDisplay(curFileEncode);
+
     QsciScintilla::focusInEvent(event);
 }
 
@@ -551,8 +572,6 @@ void MdiChild::ChangeLexer(const QString &fileName)
     Lexer->setFont(QFont("Consolas"));
     Lexer->setAutoIndentStyle(QsciScintilla::AiMaintain | QsciScintilla::AiOpening | QsciScintilla::AiClosing);
     //setAutoCompletionCaseSensitivity(false);
-
-
 }
 
 //获取对应位置的文本
@@ -581,4 +600,69 @@ void MdiChild::jumpToLine(int line)
 
     // Now set the selection.
     SendScintilla(SCI_SETSEL, pos, pos);
+}
+
+//猜测并识别文件编码
+void  MdiChild::guessFileEncoding(const QString &fileName)
+{
+    //猜测并识别文件编码
+    QFile fileBytes(fileName);
+    if (!fileBytes.open(QFile::ReadOnly ))
+    {
+        QMessageBox::warning(this, tr("lua_debug_ui"),tr("Cannot read file %1:\n%2.").arg(fileName).arg(fileBytes.errorString()));
+        return;
+    }
+    unsigned short codeType = 0;
+    fileBytes.read((char*)&codeType,sizeof(codeType));
+    if(0xfeff == codeType)
+    {
+        curFileEncode = 1;
+    }
+    else if(0xfffe == codeType)
+    {
+        curFileEncode = 2;
+    }
+    else if(0xbbef == codeType)
+    {
+        curFileEncode = 3;
+    }
+    else
+    {
+        curFileEncode = 0;
+    }
+    fileBytes.close();
+    mainFrame.refreshEncodingDisplay(curFileEncode);
+}
+
+//检查是否需要重新加载文件
+void  MdiChild::checkReloadFile()
+{
+    if(isUntitled)
+    {
+        return;
+    }
+
+    QFile file(curFileName);
+    if (!file.open(QFile::ReadOnly | QFile::Text))
+    {
+        QMessageBox::warning(this, tr("lua_debug_ui"),tr("Cannot read file %1:\n%2.").arg(curFileName).arg(file.errorString()));
+        return;
+    }
+    QTextStream in(&file);
+    QString readFileAll = in.readAll();
+    file.close();
+    if(curFileCache == readFileAll)
+    {
+        return;
+    }
+
+    //重新加载文件
+    mainFrame.outPutConsole("file maybe changed by others, reload it.");
+    guessFileEncoding(curFileName);
+    curFileCache = readFileAll;
+    setText(curFileCache);
+    setCurrentFile(curFileName);
+
+    //保存点
+    SendScintilla(SCI_SETSAVEPOINT);
 }
