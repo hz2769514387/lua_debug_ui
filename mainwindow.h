@@ -89,7 +89,8 @@ public:
     ~MainWindow();
     bool openFile(const QString &fileName);
     bool checkAndOpenFile( const QString &openFileName );
-    void outPutConsole(const char* msg);
+    void outPutConsole(const QString& msg)  {msgList->append(msg);}
+    void outPutConsole(const char* msg)     {msgList->append(QString::fromLocal8Bit(msg));}
 
     void RefreshFuncList(const QList<func> *functionDetailList, bool bClearOldList);
     void refreshEncodingDisplay(int nEncoding);

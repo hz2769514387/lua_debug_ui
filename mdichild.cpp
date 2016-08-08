@@ -86,7 +86,7 @@ MdiChild::MdiChild(MainWindow &parent)
     setMarginSensitivity(1,true);
 
     //设定折叠
-    setFolding(QsciScintilla::CircledTreeFoldStyle, 2);
+    setFolding(QsciScintilla::BoxedTreeFoldStyle, 2);
     setMarginSensitivity(2,true);
 
     //自动缩进
@@ -282,11 +282,7 @@ void MdiChild::keyPressEvent(QKeyEvent *event)
             //跳转到定义
             getCursorPosition(&line, &index);
             QString & strWordsAtPoint = wordAtLineIndex( line,  index);
-            mainFrame.outPutConsole(strWordsAtPoint.toStdString().c_str());
-
-            QToolTip::showText( cursor(). pos(),strWordsAtPoint);
-
-
+            mainFrame.outPutConsole(strWordsAtPoint);
             return;
         }
         case Qt::Key_Slash:
@@ -314,7 +310,7 @@ void MdiChild::mousePressEvent(QMouseEvent *event)
     {
         QPoint currTabPos = QWidget::mapFromGlobal(event->globalPos()) ;
         QString &strWordsAtPoint = wordAtPoint(currTabPos);
-        mainFrame.outPutConsole(strWordsAtPoint.toStdString().c_str());
+        mainFrame.outPutConsole(strWordsAtPoint);
 
         return;
     }
@@ -641,7 +637,7 @@ void  MdiChild::checkReloadFile()
     {
         return;
     }
-
+    return;
     QFile file(curFileName);
     if (!file.open(QFile::ReadOnly | QFile::Text))
     {

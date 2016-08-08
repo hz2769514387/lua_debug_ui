@@ -635,14 +635,6 @@ QMdiSubWindow *MainWindow::findMdiChild(const QString &fileName) const
     return 0;
 }
 
-//控制台输出消息
-void MainWindow::outPutConsole(const char* msg)
-{
-    QTextCodec *pCodec = QTextCodec::codecForName("GBK");
-    QString strRealOut = pCodec->toUnicode(msg);
-    msgList->append(strRealOut);
-}
-
 //拖曳进入
 void MainWindow::dragEnterEvent(QDragEnterEvent *event)
 {
