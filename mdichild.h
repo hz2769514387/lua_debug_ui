@@ -49,6 +49,7 @@
 #include <QRegularExpressionMatch>
 #include <QRegularExpressionMatchIterator>
 #include <QToolTip>
+#include <QDateTime>
 #include <Qsci/qsciscintilla.h>
 #include <Qsci/qscistyle.h>
 #include <Qsci/qscilexer.h>
@@ -101,7 +102,7 @@ public:
     QString currentFile() { return curFileName; }
     bool    isUntitledFile(){return isUntitled;}
     void    jumpToLine(int line);
-    void    checkReloadFile();
+    bool    checkReloadFile();
     void    guessFileEncoding(const QString &fileName);
 protected:
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
@@ -124,8 +125,8 @@ private:
     QString getTextRange(int start_pos,int end_pos) const;
     void ChangeLexer(const QString &fileName);
 
-    QString curFileCache;           //文档缓存
     QString curFileName;            //当前文件全路径
+    QDateTime curFileModifyTime;    //文档最后修改时间
     int     curFileEncode;          //当前文件编码 0 ANSI 1 unicode 2 unicode big endian 3 utf8
     bool    isUntitled;             //是否为无标题文本
     MainWindow  &mainFrame;         //保存的主界面指针

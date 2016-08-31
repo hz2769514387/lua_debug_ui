@@ -755,13 +755,15 @@ void MainWindow::findNext()
 }
 
 //Ö´ÐÐÌæ»»
-void MainWindow::exeuteReplace(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo,bool wrap, bool insection, bool next)
+void MainWindow::exeuteReplace(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo)
 {
     MdiChild *child = activeMdiChild();
     if (child)
     {
-        exeuteFind(exprFind,re,cs,wo,wrap,insection,next);
-        child->replace(expr);
+        if(child->findFirst(exprFind,re,cs,wo,true))
+        {
+            child->replace(expr);
+        }
     }
 }
 
@@ -826,20 +828,24 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     if( watched == this )
     {
         //´°¿Ú¼¤»î
-        if(QEvent::WindowActivate == event->type())
+        if( QEvent::WindowActivate == event->type())
         {
             foreach (QMdiSubWindow *window, mdiArea->subWindowList())
             {
                 MdiChild *mdiChild = qobject_cast<MdiChild *>(window->widget());
                 if (mdiChild)
                 {
-                    mdiChild->checkReloadFile();
+                    if(mdiChild->checkReloadFile())
+                    {
+                        outPutConsole("file maybe changed by others, reload it.");
+                        mdiChild->loadFile(mdiChild->currentFile());
+                    }
                 }
             }
             bActiveWindow = true;
             return true ;
         }
-        else if(QEvent::WindowDeactivate == event->type())
+        else if( QEvent::WindowDeactivate == event->type())
         {
             bActiveWindow = false;
             return true;

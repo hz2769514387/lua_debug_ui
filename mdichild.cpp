@@ -52,7 +52,6 @@ MdiChild::MdiChild(MainWindow &parent)
     :mainFrame(parent)
 {
     setAttribute(Qt::WA_DeleteOnClose);
-    curFileCache = "";
     curFileEncode = 0;
     isUntitled = true;
     Lexer = NULL;
@@ -118,6 +117,8 @@ MdiChild::MdiChild(MainWindow &parent)
 
     //自动提示
     setAnnotationDisplay(QsciScintilla::AnnotationBoxed);
+
+    //文档改变时的判断
 
 }
 
@@ -360,8 +361,7 @@ bool MdiChild::loadFile(const QString &fileName)
     }
     QTextStream in(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    curFileCache = in.readAll();
-    setText(curFileCache);
+    setText(in.readAll());
     QApplication::restoreOverrideCursor();
     file.close();
 
@@ -372,6 +372,7 @@ bool MdiChild::loadFile(const QString &fileName)
 
     //保存点
     SendScintilla(SCI_SETSAVEPOINT);
+    curFileModifyTime = QFileInfo(fileName).lastModified();
     return true;
 }
 
@@ -411,11 +412,12 @@ bool MdiChild::saveFile(const QString &fileName)
 
     QTextStream out(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    curFileCache = this->text() ;
-    out << curFileCache;
+    out << this->text();
     QApplication::restoreOverrideCursor();
 
     setCurrentFile(fileName);
+
+    curFileModifyTime = QFileInfo(fileName).lastModified();
     return true;
 }
 
@@ -443,7 +445,7 @@ void MdiChild::focusInEvent(QFocusEvent *event)
 
 void MdiChild::documentWasModified()
 {
-    setWindowModified(this->isModified());
+    setWindowModified(isModified());
     RefreshFuncList(false);
 }
 
@@ -631,34 +633,12 @@ void  MdiChild::guessFileEncoding(const QString &fileName)
 }
 
 //检查是否需要重新加载文件
-void  MdiChild::checkReloadFile()
+bool  MdiChild::checkReloadFile()
 {
     if(isUntitled)
     {
-        return;
-    }
-    return;
-    QFile file(curFileName);
-    if (!file.open(QFile::ReadOnly | QFile::Text))
-    {
-        mainFrame.outPutConsole("file maybe deleted by others");
-        return;
-    }
-    QTextStream in(&file);
-    QString readFileAll = in.readAll();
-    file.close();
-    if(curFileCache == readFileAll)
-    {
-        return;
+        return false;
     }
 
-    //重新加载文件
-    mainFrame.outPutConsole("file maybe changed by others, reload it.");
-    guessFileEncoding(curFileName);
-    curFileCache = readFileAll;
-    setText(curFileCache);
-    setCurrentFile(curFileName);
-
-    //保存点
-    SendScintilla(SCI_SETSAVEPOINT);
+    return ( curFileModifyTime != QFileInfo(curFileName).lastModified());
 }

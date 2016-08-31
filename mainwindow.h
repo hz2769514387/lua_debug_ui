@@ -95,7 +95,7 @@ public:
     void RefreshFuncList(const QList<func> *functionDetailList, bool bClearOldList);
     void refreshEncodingDisplay(int nEncoding);
     void exeuteFind(const QString &expr, bool re, bool cs, bool wo,bool wrap, bool insection, bool next);
-    void exeuteReplace(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo,bool wrap, bool insection, bool next);
+    void exeuteReplace(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo);
     void exeuteReplaceAll(const QString &exprFind,const QString &expr, bool re, bool cs, bool wo);
 protected:
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;

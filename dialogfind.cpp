@@ -100,10 +100,7 @@ void DialogFind::on_pushButtonReplace_clicked()
                                   this->ui->comboBoxReplace->currentText(),
                                   ui->checkBoxRE->isChecked(),
                                   ui->checkBoxCS->isChecked(),
-                                  ui->checkBoxWO->isChecked(),
-                                  true,
-                                  ui->checkBoxSEL->isChecked(),
-                                  true);
+                                  ui->checkBoxWO->isChecked());
     }
 }
 
@@ -114,9 +111,9 @@ void DialogFind::on_pushButtonREall_clicked()
     if(parentMain)
     {
         parentMain->exeuteReplaceAll(this->ui->comboBoxFind->currentText(),
-                                  this->ui->comboBoxReplace->currentText(),
-                                  ui->checkBoxRE->isChecked(),
-                                  ui->checkBoxCS->isChecked(),
-                                  ui->checkBoxWO->isChecked());
+                                     this->ui->comboBoxReplace->currentText(),
+                                     ui->checkBoxRE->isChecked(),
+                                     ui->checkBoxCS->isChecked(),
+                                     ui->checkBoxWO->isChecked());
     }
 }
