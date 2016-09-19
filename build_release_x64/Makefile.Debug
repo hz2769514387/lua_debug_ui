@@ -340,6 +340,8 @@ debug\moc_mainwindow.cpp: C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QMainW
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QRegularExpressionMatchIterator \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QToolTip \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\qtooltip.h \
+		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QDateTime \
+		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\qdatetime.h \
 		..\Qsci\qsciscintilla.h \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QByteArray \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QList \
@@ -382,7 +384,7 @@ debug\moc_mainwindow.cpp: C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QMainW
 		..\dialogfind.h \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QDialog \
 		..\mainwindow.h
-	C:\Qt\Qt5.6.0\5.6\msvc2013_64\bin\moc.exe $(DEFINES) -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/mkspecs/win32-msvc2013 -IE:/git/lua_debug_ui -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtWidgets -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtGui -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtANGLE -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtCore -I. ..\mainwindow.h -o debug\moc_mainwindow.cpp
+	C:\Qt\Qt5.6.0\5.6\msvc2013_64\bin\moc.exe $(DEFINES) -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/mkspecs/win32-msvc2013 -IF:/git/lua_debug_ui -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtWidgets -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtGui -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtANGLE -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtCore -I. ..\mainwindow.h -o debug\moc_mainwindow.cpp
 
 debug\moc_mdichild.cpp: C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QTextEdit \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\qtextedit.h \
@@ -506,6 +508,8 @@ debug\moc_mdichild.cpp: C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QTextEdi
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QRegularExpressionMatchIterator \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QToolTip \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\qtooltip.h \
+		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QDateTime \
+		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\qdatetime.h \
 		..\Qsci\qsciscintilla.h \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QByteArray \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QList \
@@ -546,7 +550,7 @@ debug\moc_mdichild.cpp: C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QTextEdi
 		..\Qsci\qsciapis.h \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QPair \
 		..\mdichild.h
-	C:\Qt\Qt5.6.0\5.6\msvc2013_64\bin\moc.exe $(DEFINES) -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/mkspecs/win32-msvc2013 -IE:/git/lua_debug_ui -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtWidgets -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtGui -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtANGLE -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtCore -I. ..\mdichild.h -o debug\moc_mdichild.cpp
+	C:\Qt\Qt5.6.0\5.6\msvc2013_64\bin\moc.exe $(DEFINES) -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/mkspecs/win32-msvc2013 -IF:/git/lua_debug_ui -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtWidgets -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtGui -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtANGLE -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtCore -I. ..\mdichild.h -o debug\moc_mdichild.cpp
 
 debug\moc_dialogfind.cpp: C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QDialog \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\qdialog.h \
@@ -654,7 +658,7 @@ debug\moc_dialogfind.cpp: C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QDialo
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtGui\qvector2d.h \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtGui\qtouchdevice.h \
 		..\dialogfind.h
-	C:\Qt\Qt5.6.0\5.6\msvc2013_64\bin\moc.exe $(DEFINES) -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/mkspecs/win32-msvc2013 -IE:/git/lua_debug_ui -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtWidgets -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtGui -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtANGLE -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtCore -I. ..\dialogfind.h -o debug\moc_dialogfind.cpp
+	C:\Qt\Qt5.6.0\5.6\msvc2013_64\bin\moc.exe $(DEFINES) -D_MSC_VER=1800 -D_WIN32 -D_WIN64 -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/mkspecs/win32-msvc2013 -IF:/git/lua_debug_ui -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtWidgets -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtGui -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtANGLE -IC:/Qt/Qt5.6.0/5.6/msvc2013_64/include/QtCore -I. ..\dialogfind.h -o debug\moc_dialogfind.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -1146,6 +1150,7 @@ debug\main.obj: ..\main.cpp C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QApp
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QRegularExpressionMatch \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QRegularExpressionMatchIterator \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QToolTip \
+		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QDateTime \
 		..\Qsci\qsciscintilla.h \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QByteArray \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QPointer \
@@ -1647,6 +1652,7 @@ debug\mainwindow.obj: ..\mainwindow.cpp C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\Qt
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QRegularExpressionMatch \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QRegularExpressionMatchIterator \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QToolTip \
+		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QDateTime \
 		..\Qsci\qsciscintilla.h \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QByteArray \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QPointer \
@@ -2141,6 +2147,7 @@ debug\mdichild.obj: ..\mdichild.cpp C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidg
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QRegularExpressionMatch \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QRegularExpressionMatchIterator \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QToolTip \
+		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QDateTime \
 		..\Qsci\qsciscintilla.h \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QByteArray \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QPointer \
@@ -2338,6 +2345,8 @@ debug\dialogfind.obj: ..\dialogfind.cpp ../dialogfind.h \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QRegularExpressionMatchIterator \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\QToolTip \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtWidgets\qtooltip.h \
+		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QDateTime \
+		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\qdatetime.h \
 		..\Qsci\qsciscintilla.h \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QByteArray \
 		C:\Qt\Qt5.6.0\5.6\msvc2013_64\include\QtCore\QList \

@@ -350,13 +350,16 @@ void MdiChild::newFile()
 bool MdiChild::loadFile(const QString &fileName)
 {
     //文件编码识别
-    guessFileEncoding(fileName);
+    if(false == guessFileEncoding(fileName))
+    {
+        return false;
+    }
 
     //真正打开文件
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly | QFile::Text))
     {
-        QMessageBox::warning(this, tr("lua_debug_ui"),tr("Cannot read file %1:\n%2.").arg(fileName).arg(file.errorString()));
+        mainFrame.outPutConsole(tr("Cannot read file %1:\n%2.").arg(fileName).arg(file.errorString()));
         return false;
     }
     QTextStream in(&file);
@@ -495,7 +498,7 @@ void MdiChild::ChangeLexer(const QString &fileName)
     else
     {
         QString fileNameNoPath  = QFileInfo(fileName).fileName();
-        QString suffix = QFileInfo(fileName).completeSuffix();
+        QString suffix = QFileInfo(fileName).suffix();
         if(suffix.compare("lua", Qt::CaseSensitivity::CaseInsensitive) == 0)
         {
             Lexer = new QsciLexerLua;
@@ -601,14 +604,14 @@ void MdiChild::jumpToLine(int line)
 }
 
 //猜测并识别文件编码
-void  MdiChild::guessFileEncoding(const QString &fileName)
+bool  MdiChild::guessFileEncoding(const QString &fileName)
 {
     //猜测并识别文件编码
     QFile fileBytes(fileName);
     if (!fileBytes.open(QFile::ReadOnly ))
     {
-        QMessageBox::warning(this, tr("lua_debug_ui"),tr("Cannot read file %1:\n%2.").arg(fileName).arg(fileBytes.errorString()));
-        return;
+        mainFrame.outPutConsole(tr("Cannot read file %1:\n%2.").arg(fileName).arg(fileBytes.errorString()));
+        return false;
     }
     unsigned short codeType = 0;
     fileBytes.read((char*)&codeType,sizeof(codeType));
@@ -630,6 +633,7 @@ void  MdiChild::guessFileEncoding(const QString &fileName)
     }
     fileBytes.close();
     mainFrame.refreshEncodingDisplay(curFileEncode);
+    return  true;
 }
 
 //检查是否需要重新加载文件

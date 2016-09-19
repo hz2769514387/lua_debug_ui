@@ -103,7 +103,7 @@ public:
     bool    isUntitledFile(){return isUntitled;}
     void    jumpToLine(int line);
     bool    checkReloadFile();
-    void    guessFileEncoding(const QString &fileName);
+    bool    guessFileEncoding(const QString &fileName);
 protected:
     void closeEvent(QCloseEvent *event) Q_DECL_OVERRIDE;
     void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
