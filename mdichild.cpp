@@ -421,6 +421,7 @@ bool MdiChild::saveFile(const QString &fileName)
     setCurrentFile(fileName);
 
     curFileModifyTime = QFileInfo(fileName).lastModified();
+    mainFrame.outPutConsole("save file time :" + curFileModifyTime.toString());
     return true;
 }
 
@@ -643,6 +644,12 @@ bool  MdiChild::checkReloadFile()
     {
         return false;
     }
+    QDateTime lastModifTime = QFileInfo(curFileName).lastModified();
 
-    return ( curFileModifyTime != QFileInfo(curFileName).lastModified());
+    if ( curFileModifyTime.offsetFromUtc() != lastModifTime.offsetFromUtc())
+    {
+        mainFrame.outPutConsole("saved modif time: " + curFileModifyTime.toString() + ", last modif time:" + lastModifTime.toString());
+        return true;
+    }
+    return false;
 }
