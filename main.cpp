@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     parser.process(app);
 
     MainWindow mainWin;
-    if(false == mainWin.checkAndOpenFile( parser.positionalArguments().at(0)))
+    if(false == mainWin.checkAndOpenFile( parser.positionalArguments().at(0), parser.positionalArguments().length() > 0))
     {
         return 0;
     }

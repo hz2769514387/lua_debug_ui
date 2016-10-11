@@ -294,7 +294,6 @@ void MdiChild::keyPressEvent(QKeyEvent *event)
                 charAddedAndAutoComplete(-1);
                 return;
             }
-            return;
         }
     default:
         break;

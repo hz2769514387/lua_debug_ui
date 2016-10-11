@@ -41,6 +41,7 @@
 #include <QtWidgets>
 #include "mainwindow.h"
 #define SHARED_MEM_NAME  L"LUA_DEBUG_UI_SHARED_OPENFILE"
+#define ONLY_OPEN_PROCESS "[*LUA_DEBUG_UI_ONLY_OPEN*]"
 
 MainWindow::~MainWindow()
 {
@@ -859,7 +860,7 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 }
 
 //启动时判断是否需要显示界面还是激活另外的进程(返回true，第一次启动，显示界面； false 后续的启动，直接退出)
-bool MainWindow::checkAndOpenFile( const QString &openFileName )
+bool MainWindow::checkAndOpenFile( const QString &openFileName , bool bOpenFile)
 {
     //多个lua_debug_ui进程通信手段
     hSharedMMap = NULL;
@@ -876,7 +877,7 @@ bool MainWindow::checkAndOpenFile( const QString &openFileName )
         if(NULL == hSharedMMap)
         {
             QMessageBox::information(NULL, "lua_debug_ui", "CreateFileMapping fail!",  QMessageBox::Ok , QMessageBox::Ok);
-            return false;
+            return true;
         }
         pSharedMBuffer = (char*)::MapViewOfFile(hSharedMMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
         return true;
@@ -885,8 +886,16 @@ bool MainWindow::checkAndOpenFile( const QString &openFileName )
     {
         //打开成功，说明不是第一次了
         LPVOID pBuffer = ::MapViewOfFile(hSharedMMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
-        QByteArray byteBuf = openFileName.toUtf8();
-        strcpy((char*)pBuffer, byteBuf.constData());
+
+        if(!bOpenFile)
+        {
+            strcpy((char*)pBuffer, ONLY_OPEN_PROCESS);
+        }
+        else
+        {
+            QByteArray byteBuf = openFileName.toUtf8();
+            strcpy((char*)pBuffer, byteBuf.constData());
+        }
         ::UnmapViewOfFile(pBuffer);
         ::CloseHandle(hSharedMMap);
         return false;
@@ -909,7 +918,10 @@ void MainWindow::timerEvent( QTimerEvent *event )
 
         if(pSharedMBuffer[0] != 0)
         {
-            openFile(pSharedMBuffer);
+            if(strcmp(pSharedMBuffer,ONLY_OPEN_PROCESS) != 0)
+            {
+                openFile(pSharedMBuffer);
+            }
             pSharedMBuffer[0] = 0;
 
             //激活到前台
